@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Collections;
 
+/**
+ * Обработка исключений на уровне контроллера
+ */
+
 @RestControllerAdvice
 public class ControllerExceptionHandler {
 

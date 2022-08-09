@@ -10,6 +10,15 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Подключение к БД + запросы к БД
+ * getAll() - Получить список всех студентов
+ * getById() - Получить студента по ID
+ * getByName() - Получить студента по имени
+ * addStudent() - Добавить студента в БД
+ * updateStudent() - Изменить данные о студенте в БД
+ * delete() - Удалить студента из БД
+ */
 
 @Service
 public class DBService {
