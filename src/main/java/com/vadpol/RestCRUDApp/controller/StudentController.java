@@ -29,13 +29,13 @@ public class StudentController {
     }
 
     @GetMapping("students/{fullName}")
-    StudentDTO getName(@PathVariable String fullName) throws SQLException {
+    List<StudentDTO> getName(@PathVariable String fullName) throws SQLException {
         return service.getName(fullName);
     }
 
     @GetMapping("student/{id}")
-    StudentDTO getStudent(@PathVariable int id) throws SQLException {
-        return service.getById(id);
+    List<StudentDTO> getStudent(@PathVariable("id") List<Integer> ids) throws SQLException {
+        return service.getByIds(ids);
     }
 
     @PostMapping("/student")

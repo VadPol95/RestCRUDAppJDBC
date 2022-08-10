@@ -1,5 +1,6 @@
 package com.vadpol.RestCRUDApp.model;
 
+import java.util.List;
 import java.util.UUID;
 
 public class Student {

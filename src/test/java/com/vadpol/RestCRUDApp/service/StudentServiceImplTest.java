@@ -1,8 +1,6 @@
-package com.vadpol.RestCRUDApp.repository;
+package com.vadpol.RestCRUDApp.service;
 
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class StudentServiceImplTest {
 

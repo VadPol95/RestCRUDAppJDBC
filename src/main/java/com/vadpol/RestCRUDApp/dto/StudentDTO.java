@@ -2,6 +2,9 @@ package com.vadpol.RestCRUDApp.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
+
 @Data
 public class StudentDTO {
     private int id;
@@ -12,6 +15,9 @@ public class StudentDTO {
         this.id = id;
         this.fullName = fullName;
         this.yearOfAdmission = yearOfAdmission;
+    }
+
+    public StudentDTO(List<Integer> id, String fullName, int yearOfAdmission) {
     }
 
 

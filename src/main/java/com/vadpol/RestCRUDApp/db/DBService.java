@@ -23,19 +23,19 @@ import java.util.List;
 @Service
 public class DBService {
 
-    public static final String driverClassName = "org.postgresql.Driver";
-    public static final String url = "jdbc:postgresql://localhost:5432/hibernate";
-    public static final String user = "postgres";
-    public static final String password = "rootroot";
+    private static final String DRIVER_CLASS_NAME = "org.postgresql.Driver";
+    private static final String URL = "jdbc:postgresql://localhost:5432/hibernate";
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "rootroot";
 
 
     private Connection getConnection() throws SQLException {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
-        dataSource.setDriverClassName(driverClassName);
-        dataSource.setUrl(url);
-        dataSource.setUsername(user);
-        dataSource.setPassword(password);
+        dataSource.setDriverClassName(DRIVER_CLASS_NAME);
+        dataSource.setUrl(URL);
+        dataSource.setUsername(USER);
+        dataSource.setPassword(PASSWORD);
 
         return dataSource.getConnection();
     }
@@ -43,55 +43,65 @@ public class DBService {
     public List<StudentDTO> getAll() throws SQLException {
         Connection connection = getConnection();
         Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery("select * from Студенты");
+        ResultSet rs = statement.executeQuery("select * from Student");
 
         List<StudentDTO> student = new ArrayList<>();
         while (rs.next()) {
             int id = rs.getInt("id");
-            String fullName = rs.getString("ФИО");
-            int yearOfAdmission = rs.getInt("Год_поступления");
+            String fullName = rs.getString("fullname");
+            int yearOfAdmission = rs.getInt("year_of_admission");
             student.add(new StudentDTO(id, fullName, yearOfAdmission));
         }
         connection.close();
         return student;
     }
 
-
-    public StudentDTO getById(int id) throws SQLException {
+    public List<StudentDTO> getByIds(List<Integer> ids) throws SQLException {
         Connection connection = getConnection();
-        Statement statement = connection.createStatement();
-        String SQL = "select * from Студенты where id = " + id;
-        ResultSet rs = statement.executeQuery(SQL);
+        StringBuilder sbSql = new StringBuilder(1024);
+        sbSql.append("SELECT * FROM Student WHERE id IN(");
 
+        for (int i = 0; i < ids.size(); i++) {
+            if (i > 0) sbSql.append(",");
+            sbSql.append(" ?");
+        }
+        sbSql.append(" )");
+        PreparedStatement pst = connection.prepareStatement(String.valueOf(sbSql));
+
+        for (int i = 0; i < ids.size(); i++) {
+            pst.setInt(i + 1, ids.get(i));
+        }
+
+        ResultSet rs = pst.executeQuery();
         List<StudentDTO> student = new ArrayList<>();
         while (rs.next()) {
-            String fullName = rs.getString("ФИО");
-            int yearOfAdmission = rs.getInt("Год_поступления");
+            int id = rs.getInt("id");
+            String fullName = rs.getString("fullname");
+            int yearOfAdmission = rs.getInt("year_of_admission");
             student.add(new StudentDTO(id, fullName, yearOfAdmission));
         }
         connection.close();
 
         if (student.isEmpty()) {
-            throw new UserNotFoundException(id);
+            throw new UserNotFoundException(String.valueOf(ids));
         } else {
-            return student.get(0);
+            return student;
         }
     }
 
-
-    public StudentDTO getName(String name) throws SQLException {
+    public List<StudentDTO> getName(String name) throws SQLException {
         StringBuilder sbName = new StringBuilder();
         sbName.append("'").append(name).append("'");
         Connection connection = getConnection();
         Statement statement = connection.createStatement();
-        String SQL = "select * from Студенты where ФИО = " + sbName;
+        String SQL = "select * from Student where fullname = " + sbName;
         ResultSet rs = statement.executeQuery(SQL);
 
         List<StudentDTO> student = new ArrayList<>();
         while (rs.next()) {
             int id = rs.getInt("id");
-            String fullName = rs.getString("ФИО");
-            int yearOfAdmission = rs.getInt("Год_поступления");
+            String fullName = rs.getString("fullname");
+            int yearOfAdmission = rs.getInt("year_of_admission");
             student.add(new StudentDTO(id, fullName, yearOfAdmission));
         }
         connection.close();
@@ -99,14 +109,14 @@ public class DBService {
         if (student.isEmpty()) {
             throw new UserNotFoundException(name);
         } else {
-            return student.get(0);
+            return student;
         }
     }
 
     public void addStudent(StudentCreate student) throws SQLException {
         Connection connection = getConnection();
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO Студенты(ФИО,Год_поступления) VALUES(?,?)");
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO Student (fullname,year_of_admission) VALUES(?,?)");
             preparedStatement.setString(1, student.getFullName());
             preparedStatement.setInt(2, student.getYearOfAdmission());
 
@@ -120,7 +130,7 @@ public class DBService {
     public void updateStudent(StudentDTO student, int id) throws SQLException {
         Connection connection = getConnection();
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE Студенты SET ФИО=?,Год_поступления=? WHERE id=?");
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE Student SET fullname=?,year_of_admission=? WHERE id=?");
 
             preparedStatement.setString(1, student.getFullName());
             preparedStatement.setInt(2, student.getYearOfAdmission());
@@ -137,7 +147,7 @@ public class DBService {
         Connection connection = getConnection();
         PreparedStatement preparedStatement = null;
         try {
-            preparedStatement = connection.prepareStatement("DELETE FROM Студенты WHERE id=?");
+            preparedStatement = connection.prepareStatement("DELETE FROM Student WHERE id=?");
 
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();

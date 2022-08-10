@@ -1,12 +1,13 @@
-package com.vadpol.RestCRUDApp.repository.impl;
+package com.vadpol.RestCRUDApp.service.impl;
 
 import com.vadpol.RestCRUDApp.db.DBService;
 import com.vadpol.RestCRUDApp.dto.StudentDTO;
 import com.vadpol.RestCRUDApp.model.StudentCreate;
-import com.vadpol.RestCRUDApp.repository.StudentService;
+import com.vadpol.RestCRUDApp.service.StudentService;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
+import java.util.List;
 
 
 @Service
@@ -18,9 +19,9 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void getById(int id) throws SQLException {
+    public void getById(List<Integer> id) throws SQLException {
         DBService dbService = new DBService();
-        dbService.getById(id);
+        dbService.getByIds(id);
     }
 
     @Override
